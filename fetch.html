@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>游戏元素与玩家信息</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f0f0f0; }
+    #content { margin-top: 20px; }
+    #playerForm { margin-top: 20px; }
+    h2 { color: #333; }
+    pre { background-color: #e0e0e0; padding: 10px; }
+  </style>
+</head>
+<body>
+  <h1>游戏元素</h1>
+  <div id="content"></div>
+
+  <h1>玩家信息</h1>
+  <form id="playerForm">
+    <label for="playerId">玩家ID: </label>
+    <input type="text" id="playerId" name="playerId" required><br><br>
+    <label for="nickname">昵称: </label>
+    <input type="text" id="nickname" name="nickname" required><br><br>
+    <label for="gameHistory">游戏历史: </label>
+    <textarea id="gameHistory" name="gameHistory" rows="4" cols="50"></textarea><br><br>
+    <button type="submit">保存信息</button>
+  </form>
+
+  <h2>历史记录</h2>
+  <pre id="historyDisplay"></pre>
+
+  <!-- 背景音乐 -->
+  <audio id="backgroundMusic" autoplay loop>
+    <source src="background-music.mp3" type="audio/mp3">
+    您的浏览器不支持音频元素。
+  </audio>
+
+  <script>
+    // 异步加载 TXT 文件内容
+    fetch('data.txt')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('content').innerText = data;
+      })
+      .catch(error => {
+        console.error('加载数据失败:', error);
+      });
+
+    // 页面加载时恢复历史记录
+    window.onload = () => {
+      const playerInfo = JSON.parse(localStorage.getItem('playerInfo'));
+      if (playerInfo) {
+        document.getElementById('playerId').value = playerInfo.playerId;
+        document.getElementById('nickname').value = playerInfo.nickname;
+        document.getElementById('gameHistory').value = playerInfo.gameHistory;
+        document.getElementById('historyDisplay').innerText = playerInfo.gameHistory;
+      }
+    };
+
+    // 保存玩家信息
+    document.getElementById('playerForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const playerInfo = {
+        playerId: document.getElementById('playerId').value,
+        nickname: document.getElementById('nickname').value,
+        gameHistory: document.getElementById('gameHistory').value
+      };
+
+      // 使用 Web Storage API 保存
+      localStorage.setItem('playerInfo', JSON.stringify(playerInfo));
+
+      // 显示保存后的游戏历史
+      document.getElementById('historyDisplay').innerText = playerInfo.gameHistory;
+    });
+  </script>
+</body>
+</html>
